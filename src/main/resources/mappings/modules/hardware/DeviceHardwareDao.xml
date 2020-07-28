@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.hardware.dao.DeviceHardwareDao">
+    
+	<sql id="deviceHardwareColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.creat_date AS "creatDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.unit_name AS "unitName",
+		a.dept_name AS "deptName",
+		a.pos_name AS "posName",
+		a.computer_name AS "computerName",
+		a.work_team AS "workTeam",
+		a.respons_people AS "responsPeople",
+		a.is_server AS "isServer",
+		a.computer_model AS "computerModel",
+		a.addr_ip AS "addrIp",
+		a.addr_mac AS "addrMac",
+		a.computer_serialno AS "computerSerialno",
+		a.income_source AS "incomeSource",
+		a.product_date AS "productDate",
+		a.user_purpose AS "userPurpose",
+		a.addr_position AS "addrPosition",
+		a.opration_system AS "oprationSystem",
+		a.is_os_genuine AS "isOsGenuine",
+		a.data_base AS "dataBase",
+		a.is_db_genuine AS "isDbGenuine",
+		a.av_software AS "avSoftware",
+		a.paid_genuine_softwares AS "paidGenuineSoftwares",
+		a.need_genuine_softwares AS "needGenuineSoftwares",
+		a.spare_param_1 AS "spareParam1",
+		a.spare_param_2 AS "spareParam2",
+		a.spare_param_3 AS "spareParam3",
+		a.spare_param_4 AS "spareParam4",
+		a.spare_param_5 AS "spareParam5",
+		a.spare_param_6 AS "spareParam6",
+		a.spare_param_7 AS "spareParam7",
+		a.spare_param_8 AS "spareParam8",
+		a.spare_param_9 AS "spareParam9",
+		a.spare_param_10 AS "spareParam10"
+	</sql>
+	
+	<sql id="deviceHardwareJoins">
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="DeviceHardware">
+		SELECT 
+			<include refid="deviceHardwareColumns"/>
+		FROM device_hardware a
+		<include refid="deviceHardwareJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DeviceHardware">
+		SELECT 
+			<include refid="deviceHardwareColumns"/>
+		FROM device_hardware a
+		<include refid="deviceHardwareJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="unitName != null and unitName != ''">
+				AND a.unit_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{unitName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{unitName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{unitName},'%')</if>
+			</if>
+			<if test="deptName != null and deptName != ''">
+				AND a.dept_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deptName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deptName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deptName},'%')</if>
+			</if>
+			<if test="isServer != null and isServer != ''">
+				AND a.is_server = #{isServer}
+			</if>
+			<if test="addrIp != null and addrIp != ''">
+				AND a.addr_ip = #{addrIp}
+			</if>
+			<if test="incomeSource != null and incomeSource != ''">
+				AND a.income_source = #{incomeSource}
+			</if>
+			<if test="userPurpose != null and userPurpose != ''">
+				AND a.user_purpose = #{userPurpose}
+			</if>
+			<if test="oprationSystem != null and oprationSystem != ''">
+				AND a.opration_system LIKE 
+					<if test="dbName == 'oracle'">'%'||#{oprationSystem}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{oprationSystem}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{oprationSystem},'%')</if>
+			</if>
+			<if test="isOsGenuine != null and isOsGenuine != ''">
+				AND a.is_os_genuine = #{isOsGenuine}
+			</if>
+			<if test="dataBase != null and dataBase != ''">
+				AND a.data_base = #{dataBase}
+			</if>
+			<if test="isDbGenuine != null and isDbGenuine != ''">
+				AND a.is_db_genuine = #{isDbGenuine}
+			</if>
+			<if test="avSoftware != null and avSoftware != ''">
+				AND a.av_software LIKE 
+					<if test="dbName == 'oracle'">'%'||#{avSoftware}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{avSoftware}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{avSoftware},'%')</if>
+			</if>
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DeviceHardware">
+		SELECT 
+			<include refid="deviceHardwareColumns"/>
+		FROM device_hardware a
+		<include refid="deviceHardwareJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO device_hardware(
+			id,
+			create_by,
+			creat_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			unit_name,
+			dept_name,
+			pos_name,
+			computer_name,
+			work_team,
+			respons_people,
+			is_server,
+			computer_model,
+			addr_ip,
+			addr_mac,
+			computer_serialno,
+			income_source,
+			product_date,
+			user_purpose,
+			addr_position,
+			opration_system,
+			is_os_genuine,
+			data_base,
+			is_db_genuine,
+			av_software,
+			paid_genuine_softwares,
+			need_genuine_softwares,
+			spare_param_1,
+			spare_param_2,
+			spare_param_3,
+			spare_param_4,
+			spare_param_5,
+			spare_param_6,
+			spare_param_7,
+			spare_param_8,
+			spare_param_9,
+			spare_param_10
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{creatDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{unitName},
+			#{deptName},
+			#{posName},
+			#{computerName},
+			#{workTeam},
+			#{responsPeople},
+			#{isServer},
+			#{computerModel},
+			#{addrIp},
+			#{addrMac},
+			#{computerSerialno},
+			#{incomeSource},
+			#{productDate},
+			#{userPurpose},
+			#{addrPosition},
+			#{oprationSystem},
+			#{isOsGenuine},
+			#{dataBase},
+			#{isDbGenuine},
+			#{avSoftware},
+			#{paidGenuineSoftwares},
+			#{needGenuineSoftwares},
+			#{spareParam1},
+			#{spareParam2},
+			#{spareParam3},
+			#{spareParam4},
+			#{spareParam5},
+			#{spareParam6},
+			#{spareParam7},
+			#{spareParam8},
+			#{spareParam9},
+			#{spareParam10}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE device_hardware SET 	
+			creat_date = #{creatDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			unit_name = #{unitName},
+			dept_name = #{deptName},
+			pos_name = #{posName},
+			computer_name = #{computerName},
+			work_team = #{workTeam},
+			respons_people = #{responsPeople},
+			is_server = #{isServer},
+			computer_model = #{computerModel},
+			addr_ip = #{addrIp},
+			addr_mac = #{addrMac},
+			computer_serialno = #{computerSerialno},
+			income_source = #{incomeSource},
+			product_date = #{productDate},
+			user_purpose = #{userPurpose},
+			addr_position = #{addrPosition},
+			opration_system = #{oprationSystem},
+			is_os_genuine = #{isOsGenuine},
+			data_base = #{dataBase},
+			is_db_genuine = #{isDbGenuine},
+			av_software = #{avSoftware},
+			paid_genuine_softwares = #{paidGenuineSoftwares},
+			need_genuine_softwares = #{needGenuineSoftwares},
+			spare_param_1 = #{spareParam1},
+			spare_param_2 = #{spareParam2},
+			spare_param_3 = #{spareParam3},
+			spare_param_4 = #{spareParam4},
+			spare_param_5 = #{spareParam5},
+			spare_param_6 = #{spareParam6},
+			spare_param_7 = #{spareParam7},
+			spare_param_8 = #{spareParam8},
+			spare_param_9 = #{spareParam9},
+			spare_param_10 = #{spareParam10}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE device_hardware SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

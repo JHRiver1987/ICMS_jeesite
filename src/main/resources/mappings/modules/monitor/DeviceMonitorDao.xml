@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.monitor.dao.DeviceMonitorDao">
+    
+	<sql id="deviceMonitorColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.unit_name AS "unitName",
+		a.status AS "status",
+		a.dept_name AS "deptName",
+		a.host_style AS "hostStyle",
+		a.host_brand AS "hostBrand",
+		a.host_model AS "hostModel",
+		a.host_num AS "hostNum",
+		a.cam_style AS "camStyle",
+		a.cam_signal AS "camSignal",
+		a.cam_brand AS "camBrand",
+		a.cam_model AS "camModel",
+		a.cam_num AS "camNum",
+		a.year AS "year"
+	</sql>
+	
+	<sql id="deviceMonitorJoins">
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office o ON u.office_id = o.id
+	</sql>
+    
+	<select id="get" resultType="DeviceMonitor">
+		SELECT 
+			<include refid="deviceMonitorColumns"/>
+		FROM device_monitor a
+		<include refid="deviceMonitorJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DeviceMonitor">
+		SELECT 
+			<include refid="deviceMonitorColumns"/>
+		FROM device_monitor a
+		<include refid="deviceMonitorJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DeviceMonitor">
+		SELECT 
+			<include refid="deviceMonitorColumns"/>
+		FROM device_monitor a
+		<include refid="deviceMonitorJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO device_monitor(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			unit_name,
+			status,
+			dept_name,
+			host_style,
+			host_brand,
+			host_model,
+			host_num,
+			cam_style,
+			cam_signal,
+			cam_brand,
+			cam_model,
+			cam_num,
+			year
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{unitName},
+			#{status},
+			#{deptName},
+			#{hostStyle},
+			#{hostBrand},
+			#{hostModel},
+			#{hostNum},
+			#{camStyle},
+			#{camSignal},
+			#{camBrand},
+			#{camModel},
+			#{camNum},
+			#{year}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE device_monitor SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			unit_name = #{unitName},
+			status = #{status},
+			dept_name = #{deptName},
+			host_style = #{hostStyle},
+			host_brand = #{hostBrand},
+			host_model = #{hostModel},
+			host_num = #{hostNum},
+			cam_style = #{camStyle},
+			cam_signal = #{camSignal},
+			cam_brand = #{camBrand},
+			cam_model = #{camModel},
+			cam_num = #{camNum},
+			year = #{year}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE device_monitor SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
