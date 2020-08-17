@@ -103,8 +103,10 @@ public class DeviceMonitorController extends BaseController {
 	public String exportFile(DeviceMonitor deviceMonitor, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
 			String fileName = "视频监控系统数据"+ DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
-			Page<DeviceMonitor> page = monitorService.findDeviceMonitor(new Page<DeviceMonitor>(request, response, -1), deviceMonitor);
-			new ExportExcel("视频监控系统信息", DeviceMonitor.class).setDataList(page.getList()).write(response, fileName).dispose();
+			//Page<DeviceMonitor> page = monitorService.findDeviceMonitor(new Page<DeviceMonitor>(request, response, -1), deviceMonitor);
+			//new ExportExcel("视频监控系统信息", DeviceMonitor.class).setDataList(page.getList()).write(response, fileName).dispose();
+			List<DeviceMonitor> deviceMonitorList = monitorService.findDeviceMonitor(deviceMonitor);
+			new ExportExcel("视频监控系统信息", DeviceMonitor.class).setDataList(deviceMonitorList).write(response, fileName).dispose();
 			return null;
 		} catch (Exception e) {
 			addMessage(redirectAttributes, "导出视频监控系统信息失败！失败信息："+e.getMessage());

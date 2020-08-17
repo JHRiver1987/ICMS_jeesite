@@ -103,8 +103,10 @@ public class DeviceHardwareController extends BaseController {
 	public String exportFile(DeviceHardware deviceHardware,HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
 			String fileName = "硬件信息数据"+ DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
-			Page<DeviceHardware> page = hardwareService.findDeviceHardware(new Page<DeviceHardware>(request, response, -1), deviceHardware);
-			new ExportExcel("硬件信息", DeviceHardware.class).setDataList(page.getList()).write(response, fileName).dispose();
+			//Page<DeviceHardware> page = hardwareService.findDeviceHardware(new Page<DeviceHardware>(request, response, -1), deviceHardware);
+			//new ExportExcel("硬件信息", DeviceHardware.class).setDataList(page.getList()).write(response, fileName).dispose();
+			List<DeviceHardware> deviceHardwareList = hardwareService.findDeviceHardware(deviceHardware);
+			new ExportExcel("硬件信息", DeviceHardware.class).setDataList(deviceHardwareList).write(response, fileName).dispose();
 			return null;
 		} catch (Exception e) {
 			addMessage(redirectAttributes, "导出硬件信息失败！失败信息："+e.getMessage());
